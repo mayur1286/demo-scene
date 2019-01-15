@@ -239,3 +239,35 @@ services:
         nc -v -u -l -p 6900 | \
         kafka-console-producer --broker-list kafka:29092 --topic atm_txns_gess
 
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:5.1.0
+    container_name: control-center
+    restart: always
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka-connect
+      - ksql-server
+    ports:
+      - "9021:9021"
+      - "9022:9022"
+    
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:9091"
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION: 1
+      CONTROL_CENTER_COMMAND_TOPIC_REPLICATION: 1
+      CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 1
+      CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 1
+      CONTROL_CENTER_CONNECT_CLUSTER: "http://connect-debezium:8083,http://kafka-connect:18083"
+      CONTROL_CENTER_KSQL_URL: "http://ksql-server:8088"
+      CONTROL_CENTER_KSQL_ADVERTISED_URL: "http://localhost:8088"
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
+     
+      
+    
+     
+
